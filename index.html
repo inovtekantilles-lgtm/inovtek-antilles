@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>InovTek Antilles — Studio marketing &amp; digital</title>
+<meta name="description" content="Nous aidons les entrepreneurs antillais à développer leur portefeuille clients : stratégie marketing sur mesure, création de sites web et d'applications, et automatisation des processus métier." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,500&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:     '#0a0a0b',
+          ink2:    '#0f0f11',
+          card:    '#141416',
+          gold:    '#d8b25c',
+          goldhi:  '#ecca7e',
+          golddim: '#a98a45',
+          muted:   '#9b958a',
+          paper:   '#f4f1ea',
+        },
+        fontFamily: {
+          sans:  ['Archivo', 'system-ui', 'sans-serif'],
+          serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+          mono:  ['"JetBrains Mono"', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<style>
+  :root { --anim: 1; }
+  html { scroll-behavior: smooth; }
+  body { background: #0a0a0b; color: #f4f1ea; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  ::selection { background: rgba(216,178,94,0.30); color: #fff; }
+
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #0a0a0b; }
+  ::-webkit-scrollbar-thumb { background: #2a261c; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3322; }
+
+  .font-mono-label {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .grain::before {
+    content: ""; position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    opacity: 0.065;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .orbit     { animation: spin 46s linear infinite; }
+  .orbit-rev { animation: spin 64s linear infinite reverse; }
+
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  .floaty { animation: floaty 7s ease-in-out infinite; }
+
+  @keyframes glowpulse { 0%,100% { opacity: 0.5; } 50% { opacity: 0.95; } }
+  .glowpulse { animation: glowpulse 6s ease-in-out infinite; }
+
+  .accent-serif {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: #ecca7e;
+  }
+  .ul-gold {
+    background-image: linear-gradient(transparent 78%, rgba(216,178,94,0.45) 78%, rgba(216,178,94,0.45) 92%, transparent 92%);
+  }
+
+  .hairline { border-color: rgba(255,255,255,0.08); }
+  .hover-lift { transition: transform .4s cubic-bezier(.16,1,.3,1), border-color .4s, background-color .4s; }
+  .hover-lift:hover { transform: translateY(-4px); }
+
+  [data-screen] { scroll-margin-top: 110px; }
+
+  .hero-img-placeholder {
+    width: 100%; height: 100%;
+    border: 1px solid rgba(216,178,94,0.28);
+    background: radial-gradient(circle at 50% 35%, #1a1916, #0c0c0d);
+    box-shadow: 0 40px 120px -30px rgba(216,178,94,0.35);
+    border-radius: 28px;
+    display: flex; align-items: center; justify-content: center;
+  }
+</style>
+</head>
+<body class="grain font-sans antialiased">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    /* ---------------------------------------------------------------- contact */
+    const TEL = "+590590928089";
+    const TEL_DISPLAY = "0590 92 80 89";
+    const WA = "https://wa.me/590590928089";
+    const IG = "https://instagram.com/inovtek_antilles";
+    const IG_HANDLE = "inovtek_antilles";
+
+    /* ---------------------------------------------------------------- helpers */
+    function Reveal({ children, delay = 0, as = "div", className = "" }) {
+      const ref = useRef(null);
+      const [shown, setShown] = useState(false);
+      useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          setShown(true); return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => entries.forEach((e) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }),
+          { threshold: 0.1, rootMargin: "0px 0px -6% 0px" }
+        );
+        io.observe(el);
+        const t = setTimeout(() => setShown(true), 1600);
+        return () => { io.disconnect(); clearTimeout(t); };
+      }, []);
+      const Tag = as;
+      return (
+        <Tag ref={ref} className={className} style={{
+          opacity: shown ? 1 : 0,
+          transform: shown ? "none" : "translateY(26px)",
+          transition: "opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1)",
+          transitionDelay: `${delay}ms`,
+          willChange: "opacity, transform",
+        }}>
+          {children}
+        </Tag>
+      );
+    }
+
+    function Eyebrow({ num, children, className = "" }) {
+      return (
+        <div className={`flex items-center gap-4 ${className}`}>
+          <span className="h-px w-10 bg-gold/50"></span>
+          <span className="font-mono-label text-gold">[{num}]</span>
+          <span className="font-mono-label text-muted">{children}</span>
+        </div>
+      );
+    }
+
+    function Logo({ className = "" }) {
+      return (
+        <a href="#top" className={`flex items-center gap-2.5 group ${className}`}>
+          <span className="grid h-9 w-9 place-items-center rounded-md border border-gold/40 bg-gold/10">
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="#ecca7e" strokeWidth="2" strokeLinejoin="round">
+              <path d="M3 19 L8 5 L12 13 L16 5 L21 19" />
+            </svg>
+          </span>
+          <span className="leading-tight">
+            <span className="block text-[15px] font-extrabold tracking-tight text-paper">InovTek</span>
+            <span className="block font-mono-label text-[9px] text-gold/70" style={{ letterSpacing: "0.28em" }}>ANTILLES</span>
+          </span>
+        </a>
+      );
+    }
+
+    function Mark({ kind }) {
+      const s = { fill: "none", stroke: "#ecca7e", strokeWidth: 1.4 };
+      return (
+        <svg viewBox="0 0 40 40" className="h-9 w-9">
+          {kind === "target" && (<g {...s}><circle cx="20" cy="20" r="14" /><circle cx="20" cy="20" r="7" /><circle cx="20" cy="20" r="1.4" fill="#ecca7e" /></g>)}
+          {kind === "web"    && (<g {...s}><rect x="6" y="9" width="28" height="22" rx="2" /><line x1="6" y1="15" x2="34" y2="15" /><circle cx="9.5" cy="12" r="0.6" fill="#ecca7e" /><circle cx="12.5" cy="12" r="0.6" fill="#ecca7e" /></g>)}
+          {kind === "app"    && (<g {...s}><rect x="12" y="5" width="16" height="30" rx="3" /><line x1="17" y1="31" x2="23" y2="31" /></g>)}
+          {kind === "ai"     && (<g {...s}><rect x="11" y="11" width="18" height="18" rx="2" transform="rotate(45 20 20)" /><circle cx="20" cy="20" r="3.4" /></g>)}
+        </svg>
+      );
+    }
+
+    /* ---------------------------------------------------------------- nav */
+    function Nav() {
+      const [open, setOpen] = useState(false);
+      const [solid, setSolid] = useState(false);
+      useEffect(() => {
+        const onScroll = () => setSolid(window.scrollY > 40);
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+      }, []);
+      const links = [
+        ["Services", "#services"],
+        ["Pourquoi nous", "#pourquoi"],
+        ["Processus", "#processus"],
+        ["Contact", "#contact"],
+      ];
+      return (
+        <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4 sm:pt-5">
+          <nav className={`flex w-full max-w-6xl items-center justify-between gap-4 rounded-2xl border px-4 py-2.5 sm:px-5 transition-all duration-500 ${solid ? "border-white/10 bg-ink/85 backdrop-blur-xl shadow-[0_18px_60px_-24px_rgba(0,0,0,0.9)]" : "border-white/[0.06] bg-ink/40 backdrop-blur-md"}`}>
+            <Logo />
+            <div className="hidden items-center gap-7 md:flex">
+              {links.map(([label, href]) => (
+                <a key={href} href={href} className="font-mono-label text-[11px] text-muted transition-colors hover:text-paper">{label}</a>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <a href="#contact" className="hidden whitespace-nowrap rounded-lg border border-gold/40 bg-gold/10 px-4 py-2 text-[13px] font-semibold text-goldhi transition-colors hover:bg-gold/20 sm:inline-flex sm:items-center sm:gap-2">
+                Démarrer un projet <span aria-hidden>→</span>
+              </a>
+              <button onClick={() => setOpen((o) => !o)} className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 text-paper md:hidden" aria-label="Menu">
+                <div className="space-y-1.5">
+                  <span className={`block h-px w-5 bg-current transition-all ${open ? "translate-y-[6px] rotate-45" : ""}`}></span>
+                  <span className={`block h-px w-5 bg-current transition-all ${open ? "opacity-0" : ""}`}></span>
+                  <span className={`block h-px w-5 bg-current transition-all ${open ? "-translate-y-[6px] -rotate-45" : ""}`}></span>
+                </div>
+              </button>
+            </div>
+          </nav>
+          {open && (
+            <div className="absolute inset-x-4 top-[72px] rounded-2xl border border-white/10 bg-ink/95 p-3 backdrop-blur-xl md:hidden">
+              {links.map(([label, href]) => (
+                <a key={href} href={href} onClick={() => setOpen(false)} className="block rounded-lg px-4 py-3 text-[15px] font-medium text-paper hover:bg-white/5">{label}</a>
+              ))}
+              <a href="#contact" onClick={() => setOpen(false)} className="mt-1 block rounded-lg bg-gold px-4 py-3 text-center text-[15px] font-semibold text-ink">Démarrer un projet</a>
+            </div>
+          )}
+        </header>
+      );
+    }
+
+    /* ---------------------------------------------------------------- hero */
+    function Hero() {
+      return (
+        <section id="top" data-screen className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <div className="absolute left-1/2 top-[-10%] h-[680px] w-[1100px] -translate-x-1/2 rounded-full glowpulse"
+                 style={{ background: "radial-gradient(circle, rgba(216,178,94,0.16), transparent 60%)", filter: "blur(40px)" }}></div>
+            <div className="absolute right-[-6%] top-[14%] h-[560px] w-[560px] rounded-full"
+                 style={{ background: "radial-gradient(circle, rgba(216,178,94,0.14), transparent 62%)", filter: "blur(30px)" }}></div>
+            <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 60%, #0a0a0b)" }}></div>
+          </div>
+
+          <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-5 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
+            <div>
+              <Reveal><Eyebrow num="01">Studio marketing &amp; digital · Guadeloupe</Eyebrow></Reveal>
+              <Reveal delay={80}>
+                <h1 className="mt-7 text-[clamp(2.6rem,6.2vw,4.6rem)] font-extrabold leading-[0.98] tracking-[-0.02em] text-paper">
+                  Développez votre{" "}
+                  <span className="accent-serif ul-gold">clientèle</span>{" "}
+                  avec une stratégie digitale{" "}
+                  <span className="accent-serif ul-gold">taillée</span>{" "}
+                  pour les Antilles
+                </h1>
+              </Reveal>
+              <Reveal delay={160}>
+                <p className="mt-7 max-w-xl text-[clamp(1rem,1.5vw,1.18rem)] leading-relaxed text-muted">
+                  Nous aidons les entrepreneurs antillais à développer leur portefeuille clients :
+                  stratégie marketing sur mesure, création de sites web et d'applications, et
+                  automatisation des processus métier.
+                </p>
+              </Reveal>
+              <Reveal delay={240}>
+                <div className="mt-9 flex flex-wrap items-center gap-3">
+                  <a href="#contact" className="group inline-flex items-center gap-2.5 rounded-xl bg-gold px-6 py-3.5 text-[15px] font-semibold text-ink transition-all hover:bg-goldhi hover:shadow-[0_16px_40px_-12px_rgba(216,178,94,0.5)]">
+                    Démarrer un projet
+                    <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+                  </a>
+                  <a href="#services" className="inline-flex items-center gap-2.5 rounded-xl border border-white/12 bg-white/[0.03] px-6 py-3.5 text-[15px] font-semibold text-paper transition-colors hover:border-gold/40 hover:text-goldhi">
+                    <span className="h-1.5 w-1.5 rounded-sm bg-gold"></span>
+                    Nos services
+                  </a>
+                </div>
+              </Reveal>
+              <Reveal delay={320}>
+                <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
+                  {[
+                    ["Basés en", "Guadeloupe 🇬🇵"],
+                    ["Au service des", "Antilles françaises"],
+                    ["Approche", "Marketing · Web · IA"],
+                  ].map(([k, v]) => (
+                    <div key={k} className="flex items-center gap-3">
+                      <span className="h-1.5 w-1.5 rounded-sm bg-gold/70"></span>
+                      <span className="text-[13px]"><span className="font-mono-label text-muted">{k}</span>{" "}<span className="font-semibold text-paper">{v}</span></span>
+                    </div>
+                  ))}
+                </div>
+              </Reveal>
+            </div>
+
+            <Reveal delay={120} className="relative">
+              <div className="relative mx-auto aspect-square w-full max-w-[480px]">
+                <div className="orbit pointer-events-none absolute inset-0 rounded-full border border-gold/20"></div>
+                <div className="orbit-rev pointer-events-none absolute inset-[10%] rounded-full border border-gold/12"></div>
+                <div className="pointer-events-none absolute inset-[-8%] rounded-full" style={{ background: "radial-gradient(circle, rgba(216,178,94,0.12), transparent 60%)", filter: "blur(24px)" }}></div>
+                <div className="floaty absolute inset-[12%]">
+                  {/* Remplacez ce bloc par votre image : <img src="votre-image.jpg" alt="InovTek Antilles" className="h-full w-full object-cover rounded-[28px]" /> */}
+                  <div className="hero-img-placeholder">
+                    <span className="font-mono-label text-golddim text-center px-4">Votre visuel ici</span>
+                  </div>
+                </div>
+                {[["top-0 left-0","border-t border-l"],["top-0 right-0","border-t border-r"],["bottom-0 left-0","border-b border-l"],["bottom-0 right-0","border-b border-r"]].map(([pos,b],i)=>(
+                  <span key={i} className={`absolute h-5 w-5 ${pos} ${b} border-gold/40`}></span>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      );
+    }
+
+    /* ---------------------------------------------------------------- services */
+    const SERVICES = [
+      { n: "01", mark: "target", title: "Stratégie marketing", desc: "Une feuille de route claire pour attirer et convertir vos clients idéaux, fondée sur votre marché local.", items: ["Positionnement & message", "Acquisition & réseaux sociaux", "Tunnel de conversion"] },
+      { n: "02", mark: "web",    title: "Création de sites web", desc: "Des sites rapides, élégants et pensés pour transformer vos visiteurs en clients.", items: ["Sites vitrines & e-commerce", "Design sur mesure", "Référencement (SEO)"] },
+      { n: "03", mark: "app",    title: "Développement d'applications", desc: "Des applications web et mobiles robustes pour digitaliser votre activité.", items: ["Applications métier", "Web & mobile", "Espaces clients"] },
+      { n: "04", mark: "ai",     title: "Automatisation & IA", desc: "Automatisez vos tâches répétitives et gagnez du temps grâce à l'intelligence artificielle.", items: ["Automatisation des process", "Agents & chatbots IA", "Intégrations sur mesure"] },
+    ];
+
+    function Services() {
+      return (
+        <section id="services" data-screen className="relative py-24 sm:py-32">
+          <div className="mx-auto max-w-6xl px-5">
+            <Reveal><Eyebrow num="02">Nos services</Eyebrow></Reveal>
+            <Reveal delay={80}>
+              <h2 className="mt-6 max-w-3xl text-[clamp(2rem,4.2vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-paper">
+                Tout ce qu'il faut pour <span className="accent-serif">faire grandir</span> votre activité, sous un même toit
+              </h2>
+            </Reveal>
+            <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] sm:grid-cols-2">
+              {SERVICES.map((s, i) => (
+                <Reveal key={s.n} delay={i * 70}>
+                  <div className="hover-lift group h-full bg-ink2 p-8 hover:bg-card sm:p-10">
+                    <div className="flex items-start justify-between">
+                      <span className="grid h-14 w-14 place-items-center rounded-xl border border-gold/25 bg-gold/[0.07] transition-colors group-hover:border-gold/50">
+                        <Mark kind={s.mark} />
+                      </span>
+                      <span className="font-mono-label text-gold/50">{s.n}</span>
+                    </div>
+                    <h3 className="mt-7 text-2xl font-bold tracking-tight text-paper">{s.title}</h3>
+                    <p className="mt-3 text-[15px] leading-relaxed text-muted">{s.desc}</p>
+                    <ul className="mt-6 space-y-2.5 border-t border-white/8 pt-6">
+                      {s.items.map((it) => (
+                        <li key={it} className="flex items-center gap-3 text-[14px] text-paper/85">
+                          <span className="h-1 w-1 rounded-sm bg-gold"></span>{it}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* ---------------------------------------------------------------- pourquoi */
+    const PILLARS = [
+      { n: "01", title: "Expertise locale", desc: "Nous connaissons le tissu économique antillais, ses clients et ses spécificités. Votre communication parle vraiment à votre marché." },
+      { n: "02", title: "Approche IA", desc: "Nous intégrons l'intelligence artificielle et l'automatisation pour vous faire gagner du temps et garder une longueur d'avance." },
+      { n: "03", title: "Résultats mesurables", desc: "Chaque action est orientée vers un objectif concret : plus de visibilité, plus de prospects, plus de clients — et des indicateurs pour le prouver." },
+    ];
+
+    function Pourquoi() {
+      return (
+        <section id="pourquoi" data-screen className="relative overflow-hidden border-y border-white/8 bg-ink2 py-24 sm:py-32">
+          <div className="pointer-events-none absolute right-[-10%] top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full" style={{ background: "radial-gradient(circle, rgba(216,178,94,0.10), transparent 60%)", filter: "blur(36px)" }}></div>
+          <div className="mx-auto max-w-6xl px-5">
+            <div className="grid grid-cols-1 gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+              <Reveal>
+                <div>
+                  <Eyebrow num="03">Pourquoi nous choisir</Eyebrow>
+                  <h2 className="mt-6 text-[clamp(2rem,4.2vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-paper">
+                    Un partenaire digital <span className="accent-serif">ancré</span> dans les Antilles
+                  </h2>
+                </div>
+              </Reveal>
+              <Reveal delay={120}>
+                <p className="text-[clamp(1rem,1.5vw,1.18rem)] leading-relaxed text-muted lg:pb-2">
+                  Nous ne sommes pas une agence hors-sol. Nous combinons une vraie connaissance du
+                  terrain avec les outils les plus modernes pour vous donner un avantage concret.
+                </p>
+              </Reveal>
+            </div>
+            <div className="mt-16 grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-3">
+              {PILLARS.map((p, i) => (
+                <Reveal key={p.n} delay={i * 90}>
+                  <div className="group">
+                    <div className="flex items-baseline gap-4 border-t border-white/12 pt-6 transition-colors group-hover:border-gold/40">
+                      <span className="font-serif text-5xl italic text-gold/70">{p.n}</span>
+                    </div>
+                    <h3 className="mt-5 text-2xl font-bold tracking-tight text-paper">{p.title}</h3>
+                    <p className="mt-3 text-[15px] leading-relaxed text-muted">{p.desc}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* ---------------------------------------------------------------- processus */
+    const STEPS = [
+      { n: "01", title: "Analyse", desc: "Nous étudions votre activité, vos clients et votre marché pour identifier les vraies opportunités de croissance." },
+      { n: "02", title: "Stratégie", desc: "Nous construisons un plan d'action sur mesure : canaux, message, outils et priorités, du concret et chiffré." },
+      { n: "03", title: "Exécution", desc: "Nous déployons, mesurons et optimisons : site, campagnes, automatisations — jusqu'aux résultats." },
+    ];
+
+    function Processus() {
+      return (
+        <section id="processus" data-screen className="relative py-24 sm:py-32">
+          <div className="mx-auto max-w-6xl px-5">
+            <Reveal><Eyebrow num="04">Notre méthode</Eyebrow></Reveal>
+            <Reveal delay={80}>
+              <h2 className="mt-6 max-w-2xl text-[clamp(2rem,4.2vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-paper">
+                Un processus en <span className="accent-serif">trois étapes</span>
+              </h2>
+            </Reveal>
+            <div className="relative mt-16 grid grid-cols-1 gap-10 md:grid-cols-3">
+              <div className="pointer-events-none absolute left-0 right-0 top-[26px] hidden h-px bg-gradient-to-r from-gold/40 via-gold/20 to-transparent md:block"></div>
+              {STEPS.map((s, i) => (
+                <Reveal key={s.n} delay={i * 100}>
+                  <div className="relative">
+                    <div className="flex items-center gap-4">
+                      <span className="relative z-10 grid place-items-center rounded-full border border-gold/40 bg-ink font-mono-label text-gold" style={{ height: "52px", width: "52px" }}>{s.n}</span>
+                      <span className="h-px flex-1 bg-white/10 md:hidden"></span>
+                    </div>
+                    <h3 className="mt-7 text-2xl font-bold tracking-tight text-paper">{s.title}</h3>
+                    <p className="mt-3 text-[15px] leading-relaxed text-muted">{s.desc}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* ---------------------------------------------------------------- CTA */
+    function CTA() {
+      return (
+        <section id="contact" data-screen className="relative px-5 py-20 sm:py-28">
+          <Reveal>
+            <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-gold/25 bg-gradient-to-b from-card to-ink2 px-6 py-16 text-center sm:px-12 sm:py-24">
+              <div className="pointer-events-none absolute left-1/2 top-[-30%] h-[480px] w-[820px] -translate-x-1/2 rounded-full glowpulse" style={{ background: "radial-gradient(circle, rgba(216,178,94,0.22), transparent 62%)", filter: "blur(40px)" }}></div>
+              <div className="relative">
+                <Eyebrow num="05" className="justify-center">Parlons de votre projet</Eyebrow>
+                <h2 className="mx-auto mt-7 max-w-3xl text-[clamp(2.1rem,5vw,3.6rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-paper">
+                  Prêt à développer votre <span className="accent-serif ul-gold">clientèle</span> ?
+                </h2>
+                <p className="mx-auto mt-6 max-w-xl text-[clamp(1rem,1.5vw,1.18rem)] leading-relaxed text-muted">
+                  Échangeons sur vos objectifs. Le premier rendez-vous est gratuit et sans engagement.
+                </p>
+                <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+                  <a href={WA} target="_blank" rel="noopener" className="group inline-flex items-center gap-2.5 rounded-xl bg-gold px-7 py-4 text-[15px] font-semibold text-ink transition-all hover:bg-goldhi hover:shadow-[0_16px_40px_-12px_rgba(216,178,94,0.55)]">
+                    Prendre rendez-vous
+                    <span className="transition-transform group-hover:translate-x-1" aria-hidden>→</span>
+                  </a>
+                  <a href={`tel:${TEL}`} className="inline-flex items-center gap-2.5 rounded-xl border border-white/12 bg-white/[0.03] px-7 py-4 text-[15px] font-semibold text-paper transition-colors hover:border-gold/40 hover:text-goldhi">
+                    <span className="h-1.5 w-1.5 rounded-full bg-gold"></span>
+                    {TEL_DISPLAY}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </section>
+      );
+    }
+
+    /* ---------------------------------------------------------------- footer */
+    function Footer() {
+      return (
+        <footer className="border-t border-white/8 bg-ink py-14">
+          <div className="mx-auto max-w-6xl px-5">
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+              <div>
+                <Logo />
+                <p className="mt-5 max-w-xs text-[14px] leading-relaxed text-muted">
+                  Studio de marketing digital, web et IA au service des entrepreneurs et PME des Antilles françaises.
+                </p>
+              </div>
+              <div>
+                <span className="font-mono-label text-gold/60">Contact</span>
+                <ul className="mt-4 space-y-3 text-[15px]">
+                  <li><a href={`tel:${TEL}`} className="text-paper transition-colors hover:text-goldhi">{TEL_DISPLAY}</a><span className="ml-2 font-mono-label text-[10px] text-muted">TÉL</span></li>
+                  <li><a href={WA} target="_blank" rel="noopener" className="text-paper transition-colors hover:text-goldhi">{TEL_DISPLAY}</a><span className="ml-2 font-mono-label text-[10px] text-muted">WHATSAPP</span></li>
+                  <li><a href={IG} target="_blank" rel="noopener" className="text-paper transition-colors hover:text-goldhi">@{IG_HANDLE}</a><span className="ml-2 font-mono-label text-[10px] text-muted">INSTAGRAM</span></li>
+                </ul>
+              </div>
+              <div>
+                <span className="font-mono-label text-gold/60">Navigation</span>
+                <ul className="mt-4 space-y-3 text-[15px]">
+                  {[["Services","#services"],["Pourquoi nous","#pourquoi"],["Processus","#processus"],["Démarrer un projet","#contact"]].map(([l,h])=>(
+                    <li key={h}><a href={h} className="text-muted transition-colors hover:text-paper">{l}</a></li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/8 pt-6 sm:flex-row sm:items-center">
+              <span className="font-mono-label text-[10px] text-muted">© {new Date().getFullYear()} INOVTEK ANTILLES — GUADELOUPE</span>
+              <span className="font-mono-label text-[10px] text-muted">MARKETING · WEB · IA</span>
+            </div>
+          </div>
+        </footer>
+      );
+    }
+
+    /* ---------------------------------------------------------------- floating contact */
+    function FloatingContact() {
+      const btn = "grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-ink/80 backdrop-blur-md text-paper transition-all hover:border-gold/50 hover:text-goldhi hover:-translate-y-0.5 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.8)]";
+      return (
+        <div className="fixed bottom-5 right-4 z-40 flex flex-col gap-2.5 sm:bottom-7 sm:right-6">
+          <a href={WA} target="_blank" rel="noopener" aria-label="WhatsApp" className={btn}>
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.8c2.17 0 4.2.85 5.74 2.38a8.06 8.06 0 0 1 2.38 5.73c0 4.46-3.63 8.09-8.1 8.09a8.1 8.1 0 0 1-4.13-1.13l-.3-.18-3.12.82.83-3.04-.19-.31a8.06 8.06 0 0 1-1.24-4.3c0-4.47 3.63-8.1 8.13-8.1Zm4.6 10.13c-.25-.13-1.47-.72-1.69-.8-.23-.09-.39-.13-.56.12-.16.25-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.42l-.48-.01c-.16 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.13.16 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z"/></svg>
+          </a>
+          <a href={`tel:${TEL}`} aria-label="Téléphone" className={btn}>
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2Z"/></svg>
+          </a>
+          <a href={IG} target="_blank" rel="noopener" aria-label="Instagram" className={btn}>
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+        </div>
+      );
+    }
+
+    /* ---------------------------------------------------------------- app */
+    function App() {
+      return (
+        <React.Fragment>
+          <Nav />
+          <main>
+            <Hero />
+            <Services />
+            <Pourquoi />
+            <Processus />
+            <CTA />
+          </main>
+          <Footer />
+          <FloatingContact />
+        </React.Fragment>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

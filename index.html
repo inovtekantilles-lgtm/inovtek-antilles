@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>InovTek Antilles — Studio marketing &amp; digital</title>
+<title>InovTek Antilles Marketplace — Studio marketing &amp; digital</title>
 <meta name="description" content="Nous aidons les entrepreneurs antillais à développer leur portefeuille clients : stratégie marketing sur mesure, création de sites web et d'applications, et automatisation des processus métier." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -191,6 +191,7 @@
         ["Services", "#services"],
         ["Pourquoi nous", "#pourquoi"],
         ["Processus", "#processus"],
+        ["Marketplace", "#marketplace"],
         ["Contact", "#contact"],
       ];
       return (
@@ -436,6 +437,90 @@
       );
     }
 
+    /* ---------------------------------------------------------------- marketplace */
+    const OFFRES = [
+      {
+        n: "01",
+        tag: "Starter",
+        prix: "250 €",
+        periode: "/ mois",
+        desc: "Pour démarrer votre présence digitale.",
+        items: ["Site vitrine 5 pages", "1 réseau social géré", "Rapport mensuel", "Support WhatsApp"],
+        accent: false,
+      },
+      {
+        n: "02",
+        tag: "Croissance",
+        prix: "500 €",
+        periode: "/ mois",
+        desc: "Pour accélérer votre acquisition clients.",
+        items: ["Site vitrine + blog SEO", "3 réseaux sociaux gérés", "Stratégie marketing", "Automatisations IA", "Rapport hebdomadaire"],
+        accent: true,
+      },
+      {
+        n: "03",
+        tag: "Premium",
+        prix: "Sur devis",
+        periode: "",
+        desc: "Pour les projets ambitieux sur mesure.",
+        items: ["Application web ou mobile", "E-commerce complet", "Agents IA personnalisés", "Accompagnement dédié", "Suivi KPI avancé"],
+        accent: false,
+      },
+    ];
+
+    function Marketplace() {
+      return (
+        <section id="marketplace" data-screen className="relative py-24 sm:py-32">
+          <div className="mx-auto max-w-6xl px-5">
+            <Reveal><Eyebrow num="05">Marketplace</Eyebrow></Reveal>
+            <Reveal delay={80}>
+              <h2 className="mt-6 max-w-3xl text-[clamp(2rem,4.2vw,3.2rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-paper">
+                Nos offres, <span className="accent-serif">claires et transparentes</span>
+              </h2>
+            </Reveal>
+            <Reveal delay={120}>
+              <p className="mt-4 max-w-xl text-[clamp(1rem,1.5vw,1.1rem)] leading-relaxed text-muted">
+                Choisissez la formule adaptée à votre stade de développement. Pas de surprise, pas de frais cachés.
+              </p>
+            </Reveal>
+
+            <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
+              {OFFRES.map((o, i) => (
+                <Reveal key={o.n} delay={i * 80}>
+                  <div className={`hover-lift relative flex h-full flex-col rounded-2xl border p-8 ${o.accent ? "border-gold/60 bg-gradient-to-b from-gold/10 to-ink2" : "border-white/10 bg-ink2"}`}>
+                    {o.accent && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <span className="rounded-full bg-gold px-4 py-1 font-mono-label text-[10px] text-ink">POPULAIRE</span>
+                      </div>
+                    )}
+                    <div className="flex items-start justify-between">
+                      <span className="font-mono-label text-gold/50">{o.n}</span>
+                      <span className={`rounded-lg border px-3 py-1 font-mono-label text-[10px] ${o.accent ? "border-gold/40 text-goldhi" : "border-white/10 text-muted"}`}>{o.tag}</span>
+                    </div>
+                    <div className="mt-6">
+                      <span className="text-[2.4rem] font-extrabold leading-none tracking-tight text-paper">{o.prix}</span>
+                      {o.periode && <span className="ml-1 text-[15px] text-muted">{o.periode}</span>}
+                    </div>
+                    <p className="mt-3 text-[14px] leading-relaxed text-muted">{o.desc}</p>
+                    <ul className="mt-6 flex-1 space-y-3 border-t border-white/8 pt-6">
+                      {o.items.map((it) => (
+                        <li key={it} className="flex items-center gap-3 text-[14px] text-paper/85">
+                          <span className={`h-1.5 w-1.5 rounded-sm ${o.accent ? "bg-gold" : "bg-gold/50"}`}></span>{it}
+                        </li>
+                      ))}
+                    </ul>
+                    <a href="#contact" className={`mt-8 flex items-center justify-center gap-2 rounded-xl py-3.5 text-[14px] font-semibold transition-all ${o.accent ? "bg-gold text-ink hover:bg-goldhi hover:shadow-[0_12px_30px_-10px_rgba(216,178,94,0.5)]" : "border border-white/12 bg-white/[0.03] text-paper hover:border-gold/40 hover:text-goldhi"}`}>
+                      Démarrer <span aria-hidden>→</span>
+                    </a>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     /* ---------------------------------------------------------------- CTA */
     function CTA() {
       return (
@@ -491,7 +576,7 @@
               <div>
                 <span className="font-mono-label text-gold/60">Navigation</span>
                 <ul className="mt-4 space-y-3 text-[15px]">
-                  {[["Services","#services"],["Pourquoi nous","#pourquoi"],["Processus","#processus"],["Démarrer un projet","#contact"]].map(([l,h])=>(
+                  {[["Services","#services"],["Pourquoi nous","#pourquoi"],["Processus","#processus"],["Marketplace","#marketplace"],["Démarrer un projet","#contact"]].map(([l,h])=>(
                     <li key={h}><a href={h} className="text-muted transition-colors hover:text-paper">{l}</a></li>
                   ))}
                 </ul>
@@ -534,6 +619,7 @@
             <Services />
             <Pourquoi />
             <Processus />
+            <Marketplace />
             <CTA />
           </main>
           <Footer />
